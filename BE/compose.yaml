@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: 'postgres:13'
+    container_name: 'auth-postgres'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '5432'
