@@ -4,6 +4,7 @@ import com.org.auth.dto.UserDTO;
 import com.org.auth.dto.UserLoginDTO;
 import com.org.auth.entity.UserEntity;
 import com.org.auth.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,16 @@ public class LoginService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
+    @Transactional
     public ResponseEntity<?> signup (UserDTO userDTO) {
         try{
             var password = userDTO.password();
+
+            Optional<UserEntity> user = userRepository.findByEmail(userDTO.email());
+            if(user.isPresent()){
+                log.error("usuário ja existe");
+                return new ResponseEntity<>("usuario ja existe", HttpStatus.BAD_REQUEST);
+            }
 
             userRepository.save(userDTO.toUserEntity(this.passwordEncoder.encode(password)));
             log.info("usuário criado com sucesso!");
